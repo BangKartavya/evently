@@ -54,7 +54,7 @@ export async function POST(req: Request) {
 
     if (eventType === "user.created") {
         const {id, email_addresses, image_url, first_name, last_name, username} = evt.data;
-
+        console.log("in user create");
         const user = {
             clerkId: id!,
             email: email_addresses[0].email_address!,
@@ -67,12 +67,13 @@ export async function POST(req: Request) {
         const newUser = await createUser(user);
 
         if (newUser) {
-            // await clerkClient.users.updateUserMetadata(id, {
-            //     publicMetadata: {
-            //         userId: newUser._id
-            //     }
-            // });
-            await clerkClient.arguments.users.updateUserMetadata(id, {publicMetadata: {userId: newUser._id}});
+            const client = await clerkClient();
+            await client.users.updateUserMetadata(id, {
+                publicMetadata: {
+                    userId: newUser._id.toString()
+                }
+            });
+            // await clerkClient.arguments.users.updateUserMetadata(id, {publicMetadata: {userId: newUser._id}});
         }
 
         return NextResponse.json({
@@ -96,6 +97,7 @@ export async function POST(req: Request) {
             user: updatedUser
         });
     } else if (eventType === "user.deleted") {
+        console.log("in delete user");
         const {id} = evt.data;
 
         const deletedUser = await deleteUser(id!);
