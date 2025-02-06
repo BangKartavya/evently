@@ -6,10 +6,6 @@ const CreateEvent = async () => {
     const {sessionClaims} = await auth();
 
     const userId = sessionClaims?.userId as string;
-    console.log({
-        sessionClaims,
-        userId
-    });
 
     return (
         <>

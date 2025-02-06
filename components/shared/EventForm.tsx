@@ -18,16 +18,28 @@ import "react-datepicker/dist/react-datepicker.css";
 import {Checkbox} from "@/components/ui/checkbox";
 import {useUploadThing} from "@/lib/uploadthing";
 import {useRouter} from "next/navigation";
-import {createEvent} from '@/lib/actions/event.actions';
+import {createEvent, updateEvent} from '@/lib/actions/event.actions';
+import {IEvent} from "@/lib/database/models/event.model";
 
 interface EventFormProps {
     userId: string;
-    type: "Create" | "Update"
+    type: "Create" | "Update";
+    event?: IEvent;
+    eventId?: string;
 }
 
-const EventForm = ({userId, type}: EventFormProps) => {
+const EventForm = ({userId, type, event, eventId}: EventFormProps) => {
     const [files, setFiles] = useState<File[]>([]);
     const [isFree, setIsFree] = useState(false);
+
+    console.log(event);
+
+    const initialValues = event && type === "Update" ? {
+        ...event,
+        price: event.price,
+        startDateTime: new Date(event.startDateTime),
+        endDateTime: new Date(event.endDateTime)
+    } : eventDefaultValues;
 
     const {startUpload} = useUploadThing("imageUploader");
     const router = useRouter();
@@ -35,7 +47,7 @@ const EventForm = ({userId, type}: EventFormProps) => {
 
     const form = useForm<z.infer<typeof eventFormSchema>>({
         resolver: zodResolver(eventFormSchema),
-        defaultValues: eventDefaultValues,
+        defaultValues: initialValues,
     });
 
     // 2. Define a submit handler.
@@ -61,7 +73,26 @@ const EventForm = ({userId, type}: EventFormProps) => {
 
                 if (newEvent) {
                     form.reset();
-                    router.push(`/events/${newEvent.id}`);
+                    router.push(`/events/${newEvent._id}`);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        } else if (type === "Update") {
+            if (!eventId) {
+                router.back();
+                return;
+            }
+            try {
+                const updatedEvent = await updateEvent({
+                    userId: userId,
+                    event: {...values, imageUrl: uploadedImagesUrl, _id: eventId},
+                    path: `/events/${eventId}`
+                });
+
+                if (updatedEvent) {
+                    form.reset();
+                    router.push(`/events/${updatedEvent._id}`);
                 }
             } catch (error) {
                 console.log(error);
@@ -233,7 +264,7 @@ const EventForm = ({userId, type}: EventFormProps) => {
                                             height={24}
                                             className="filter-grey"
                                         />
-                                        <p className="ml-3 whitespace-nowrap text-gray-600">Start Date</p>
+                                        <p className="ml-3 whitespace-nowrap text-gray-600">Price</p>
                                         <Input
                                             type="number"
                                             placeholder="Price"
