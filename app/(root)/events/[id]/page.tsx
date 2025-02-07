@@ -102,9 +102,9 @@ const EventDetails = async ({params, searchParams}: SearchParamProps) => {
                     emptyTitle="No Events for now"
                     emptyStateSubtext="Check Later"
                     collectionType="All_Events"
-                    limit={6}
-                    page={1}
-                    totalPages={2}
+                    limit={3}
+                    page={page as string}
+                    totalPages={relatedEvents?.totalPages}
                 />
             </section>
         </>

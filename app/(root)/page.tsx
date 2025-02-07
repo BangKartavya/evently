@@ -3,13 +3,21 @@ import Link from "next/link";
 import Image from "next/image";
 import Collection from "@/components/shared/Collection";
 import {getAllEvents} from "@/lib/actions/event.actions";
+import Search from "@/components/shared/Search";
+import {SearchParamProps} from "@/types";
+import CategoryFilter from "@/components/shared/CategoryFilter";
 
-const Home = async () => {
+const Home = async ({searchParams}: SearchParamProps) => {
+    const params = await searchParams;
+    const page = Number(params?.page) || 1;
+    const searchText = params?.query as string || "";
+    const category = params?.category as string || "";
+
     const events = await getAllEvents({
-        query: "",
-        category: "",
-        page: 1,
-        limit: 6
+        query: searchText,
+        category: category,
+        page: page,
+        limit: 3
     });
     return (
         <>
@@ -43,17 +51,17 @@ const Home = async () => {
                     Trusted By <br/> Thousands of Events
                 </h2>
                 <div className="flex w-full flex-col gap-5 md:flex-row">
-                    Search
-                    CategoryFilter
+                    <Search/>
+                    <CategoryFilter/>
                 </div>
                 <Collection
                     data={events?.data}
                     emptyTitle="No Events for now"
                     emptyStateSubtext="Check Later"
                     collectionType="All_Events"
-                    limit={6}
-                    page={1}
-                    totalPages={2}
+                    limit={3}
+                    page={page}
+                    totalPages={events?.totalPages}
                 />
             </section>
         </>

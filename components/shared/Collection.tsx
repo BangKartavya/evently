@@ -1,7 +1,7 @@
 import React from 'react';
 import {IEvent} from "@/lib/database/models/event.model";
-import {getAllEvents} from "@/lib/actions/event.actions";
 import Card from "@/components/shared/Card";
+import Pagination from "@/components/shared/Pagination";
 
 interface CollectionProps {
     data: IEvent[];
@@ -38,13 +38,20 @@ const Collection = ({
                                 <li key={event._id} className="flex justify-center">
                                     <Card
                                         event={event}
-                                        hasOrderLink={true}
+                                        hasOrderLink={hasOrderLink}
                                         hidePrice={hidePrice}
                                     />
                                 </li>
                             )
                         })}
                     </ul>
+                    {totalPages > 1 && (
+                        <Pagination
+                            urlParamName={urlParamName}
+                            page={page}
+                            totalPages={totalPages}
+                        />
+                    )}
                 </div>
             ) : (
                 <div
