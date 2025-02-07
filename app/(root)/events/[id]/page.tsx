@@ -6,6 +6,8 @@ import {formatDateTime} from "@/lib/utils";
 import {revalidatePath} from "next/cache";
 import Link from "next/link";
 import Collection from "@/components/shared/Collection";
+import {auth} from '@clerk/nextjs/server';
+import CheckoutButton from "@/components/shared/CheckoutButton";
 
 const EventDetails = async ({params, searchParams}: SearchParamProps) => {
     const {id} = await params;
@@ -47,7 +49,7 @@ const EventDetails = async ({params, searchParams}: SearchParamProps) => {
                                 </p>
                             </div>
                         </div>
-                        {/*TODO CHECKOUT BUTTON*/}
+                        <CheckoutButton event={event}/>
                         <div className="flex flex-col gap-5">
                             <div className="flex gap-2 md:gap-3">
                                 <Image

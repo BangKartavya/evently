@@ -32,8 +32,6 @@ const EventForm = ({userId, type, event, eventId}: EventFormProps) => {
     const [files, setFiles] = useState<File[]>([]);
     const [isFree, setIsFree] = useState(false);
 
-    console.log(event);
-
     const initialValues = event && type === "Update" ? {
         ...event,
         price: event.price,
